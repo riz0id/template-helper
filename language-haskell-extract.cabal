@@ -1,16 +1,17 @@
-name: language-haskell-extract
-version: 0.2.3
-cabal-version: >=1.6
-build-type: Simple
-license: BSD3
-license-file: "BSD3.txt"
-maintainer: Oscar Finnsson
+cabal-version: 3.4
 
-stability: stable
-homepage: http://github.com/finnsson/template-helper
-package-url:
-bug-reports:
-synopsis: Module to automatically extract functions from the local code.
+author:       Oscar Finnsson & Emil Nordling
+maintainer:   Oscar Finnsson
+homepage:     http://github.com/finnsson/template-helper
+synopsis:     Module to automatically extract functions from the local code.
+category:     Template Haskell
+name:         language-haskell-extract
+version:      0.2.3
+license:      BSD-3-Clause
+license-file: LICENSE
+stability:    stable
+build-type:   Simple
+
 description:
    @language-haskell-extract@ contains some useful helper functions on top of Template Haskell.
    .
@@ -19,9 +20,9 @@ description:
    > foo = "test"
    > boo = "testing"
    > bar = $(functionExtractor "oo$")
-   .  
+   .
    will automagically extract the functions ending with @oo@ such as
-   . 
+   .
    > bar = [("foo",foo), ("boo",boo)]
    .
    This can be useful if you wish to extract all functions beginning with test (for a test-framework)
@@ -37,24 +38,56 @@ description:
    >   do let expected = ["45", "88.8", "\"hej\""]
    >          actual = $(functionExtractorMap "^tc" [|\n f -> show f|] )
    >      expected @=? actual
-   > 
+   >
    > tcInt :: Integer
    > tcInt = 45
-   > 
+   >
    > tcDouble :: Double
    > tcDouble = 88.8
-   > 
+   >
    > tcString :: String
    > tcString = "hej"
-category: Template Haskell
-author: Oscar Finnsson & Emil Nordling
-
-library
-  ghc-options: -Wall
-  hs-source-dirs: src
-  exposed-modules: Language.Haskell.Extract
-  build-depends: base >= 4 && < 5, regex-posix, template-haskell
 
 source-repository head
   type:     git
   location: http://github.com/finnsson/template-helper
+
+common common
+  default-extensions:
+    BlockArguments ImportQualifiedPost
+
+  ghc-options:
+    -Wall
+
+  build-depends:
+    , base >= 4 && < 5
+
+library
+  import:         common
+  hs-source-dirs: src
+
+  build-depends:
+    , regex-posix      >= 0.96.0 && < 0.97
+    , template-haskell >= 2.20.0 && < 2.21
+
+  exposed-modules:
+    Language.Haskell.Extract
+
+test-suite language-haskell-extract-test
+  import:         common
+  type:           exitcode-stdio-1.0
+  hs-source-dirs: test
+  main-is:        Test.hs
+
+  ghc-options:
+    -threaded
+    -rtsopts
+    "-with-rtsopts=-N"
+
+  build-depends:
+    , language-haskell-extract
+    , HUnit
+    , tasty
+    , tasty-hunit
+
+  other-modules:

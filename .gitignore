@@ -1,4 +1,5 @@
 dist
+dist-newstyle
 *.swp
 *.hi
 .DS_Store
